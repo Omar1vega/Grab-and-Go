@@ -6,80 +6,87 @@
 # modification: 2018/11/07
 ########################################################################
 
-#from PCF8574 import PCF8574_GPIO
-#from Adafruit_LCD1602 import Adafruit_CharLCD
-import RPi.GPIO as GPIO
-import smbus
-import math
-import smtplib
 import time
 
-
-
-from time import sleep, strftime
-from datetime import datetime
+import RPi.GPIO as GPIO
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
 trigPin = 16
 echoPin = 18
-MAX_DISTANCE = 220          #define the maximum measured distance
-timeOut = MAX_DISTANCE*60   #calculate timeout according to the maximum measured distance
+MAX_DISTANCE = 220  # define the maximum measured distance
+timeOut = MAX_DISTANCE * 60  # calculate timeout according to the maximum measured distance
 
-def pulseIn(pin,level,timeOut): # function pulseIn: obtain pulse time of a pin
+
+def updateDistance(distance):
+    firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials.json'),
+                                  {'databaseURL': 'https://androidsample-225db.firebaseio.com/'})
+    root = db.reference('distance')
+    root.update({
+        'distance': distance
+    })
+
+
+def pulseIn(pin, level, timeOut):  # function pulseIn: obtain pulse time of a pin
     t0 = time.time()
-    while(GPIO.input(pin) != level):
-        if((time.time() - t0) > timeOut*0.000001):
-            return 0;
+    while GPIO.input(pin) != level:
+        if (time.time() - t0) > timeOut * 0.000001:
+            return 0
     t0 = time.time()
-    while(GPIO.input(pin) == level):
-        if((time.time() - t0) > timeOut*0.000001):
-            return 0;
-    pulseTime = (time.time() - t0)*1000000
-    return pulseTime
-    
-def getSonar():     #get the measurement results of ultrasonic module,with unit: cm
-    GPIO.output(trigPin,GPIO.HIGH)      #make trigPin send 10us high level 
-    time.sleep(0.00001)     #10us
-    GPIO.output(trigPin,GPIO.LOW)
-    pingTime = pulseIn(echoPin,GPIO.HIGH,timeOut)   #read plus time of echoPin
-    distance = pingTime * 340.0 / 2.0 / 10000.0     # the sound speed is 340m/s, and calculate distance
+    while GPIO.input(pin) == level:
+        if (time.time() - t0) > timeOut * 0.000001:
+            return 0
+    return (time.time() - t0) * 1000000
+
+
+def getDistance():  # get the measurement results of ultrasonic module,with unit: cm
+    GPIO.output(trigPin, GPIO.HIGH)  # make trigPin send 10us high level
+    time.sleep(0.00001)  # 10us
+    GPIO.output(trigPin, GPIO.LOW)
+    pingTime = pulseIn(echoPin, GPIO.HIGH, timeOut)  # read plus time of echoPin
+    distance = pingTime * 340.0 / 2.0 / 10000.0  # the sound speed is 340m/s, and calculate distance
     return distance
-    
+
+
 def setup():
-    print('Program is starting...')
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(trigPin, GPIO.OUT)   #
-    GPIO.setup(echoPin, GPIO.IN)    #
-    
-def get_time_now():     # get system time
-    return datetime.now().strftime('%b %-d %X')
+    GPIO.setup(trigPin, GPIO.OUT)
+    GPIO.setup(echoPin, GPIO.IN)
+
+
 def checkDistance(distance):
-    return distance<=20 and distance>0
+    return 20 >= distance > 0
 
 
 personAlerted = False
 counter = 0
+
+
 def awayMode():
-    distance = getSonar()
-
+    distance = getDistance()
     print("distance =", distance)
-    
-    #if (checkDistance(distance)):
 
-    time.sleep(1)
-    
+    updateDistance(int(distance))
+
+    # if (checkDistance(distance)):
+    # update firebase
+    time.sleep(3)
+
+
 def loop():
-    while(True):
+    while True:
         awayMode()
-        
+
+
 def destroy():
     GPIO.cleanup()
 
 
 if __name__ == '__main__':
-    print 'Program is starting ... '
+    print('Program is starting ... ')
     setup()
     try:
         loop()
     except KeyboardInterrupt:
         destroy()
-
