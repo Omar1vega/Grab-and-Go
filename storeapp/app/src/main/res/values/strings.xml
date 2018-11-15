@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Amazot Go</string>
+    <string name="distance_title">Current Distance:</string>
+    <string name="distance_placeholder">0 cm</string>
 </resources>
