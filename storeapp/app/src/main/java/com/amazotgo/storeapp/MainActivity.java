@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private DatabaseReference mDistanceReference;
     private TextView distanceContainer;
+    private TextView authenticatedUser;
     private Button signOutButton;
 
     private FirebaseAuth mAuth;
@@ -52,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         distanceContainer = findViewById(R.id.distance_container);
         signOutButton = findViewById(R.id.signOutButton);
+        authenticatedUser = findViewById(R.id.auth_user_name);
+        if (mAuth.getCurrentUser().getDisplayName() != null) {
+            authenticatedUser.setText(mAuth.getCurrentUser().getDisplayName());
+        }
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

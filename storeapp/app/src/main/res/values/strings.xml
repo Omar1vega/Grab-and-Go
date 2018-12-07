@@ -2,6 +2,7 @@
     <string name="app_name">Amazot Go</string>
     <string name="distance_title">Current Distance:</string>
     <string name="distance_placeholder">0 cm</string>
+    <string name="name_placeholder">Peter Anteater</string>
 
     <string name="label_google_sign_in">Firebase + Google Sign In</string>
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
