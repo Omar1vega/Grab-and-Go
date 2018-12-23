@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "310792908837-t2lbc3c51b1fv4jbn9k1v1ovub4lip0n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.amazotgo.storeapp",
+            "certificate_hash": "5cc40f2fd7b6261a8618487df8250810f87b6ce0"
+          }
+        },
+        {
           "client_id": "310792908837-3rklla3905vrdnorqrcrkbjmslrracva.apps.googleusercontent.com",
           "client_type": 3
         }
