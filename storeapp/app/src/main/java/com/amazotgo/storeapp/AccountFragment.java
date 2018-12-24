@@ -7,13 +7,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class AccountFragment extends Fragment {
-
+    private Button signOutButton;
+    private Main2Activity main;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -22,8 +20,16 @@ public class AccountFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        View view = inflater.inflate(R.layout.fragment_account, container, false);
+        main = (Main2Activity) getActivity();
+        signOutButton = view.findViewById(R.id.signOutButton);
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                main.signOut();
+            }
+        });
+        return view;
     }
 
 }
