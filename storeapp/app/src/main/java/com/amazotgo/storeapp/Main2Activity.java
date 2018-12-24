@@ -92,4 +92,8 @@ public class Main2Activity extends AppCompatActivity implements TransactionFragm
                     }
                 });
     }
+
+    FirebaseAuth getAuth() {
+        return mAuth;
+    }
 }
