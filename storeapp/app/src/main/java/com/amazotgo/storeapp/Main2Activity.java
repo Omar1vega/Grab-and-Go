@@ -1,5 +1,6 @@
 package com.amazotgo.storeapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,6 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.amazotgo.storeapp.dummy.DummyContent;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+
+import static com.amazotgo.storeapp.GoogleSignInActivity.googleSignInOptions;
 
 public class Main2Activity extends AppCompatActivity implements TransactionFragment.OnListFragmentInteractionListener {
 
@@ -16,8 +24,11 @@ public class Main2Activity extends AppCompatActivity implements TransactionFragm
     private final static Fragment store = new StoreFragment();
     private final static Fragment account = new AccountFragment();
     private final FragmentManager fragmentManager = getSupportFragmentManager();
-
     private Fragment activeFragment = store;
+
+    private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -45,6 +56,9 @@ public class Main2Activity extends AppCompatActivity implements TransactionFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+        mAuth = FirebaseAuth.getInstance();
+
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setSelectedItemId(R.id.navigation_store);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -62,5 +76,20 @@ public class Main2Activity extends AppCompatActivity implements TransactionFragm
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
+    }
+
+    void signOut() {
+        // Firebase sign out
+        mAuth.signOut();
+
+        // Google sign out
+        mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(new Intent(Main2Activity.this, GoogleSignInActivity.class));
+                        finish();
+                    }
+                });
     }
 }
