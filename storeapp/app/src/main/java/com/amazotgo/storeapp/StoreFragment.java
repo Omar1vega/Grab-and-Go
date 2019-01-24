@@ -37,6 +37,7 @@ public class StoreFragment extends Fragment {
     private Main2Activity main;
     private DatabaseReference mDatabase;
     private DatabaseReference mDistanceReference;
+    private DatabaseReference cartReference;
 
     private TextView distanceContainer;
     private Animation blink;
@@ -57,6 +58,8 @@ public class StoreFragment extends Fragment {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDistanceReference = mDatabase.child("distance");
+        //TODO: get user id to replace sub dir
+        cartReference = mDatabase.child("carts/8mBk742Op7cpW2RYZkb4yRoWpN92/items");
 
         distanceContainer = view.findViewById(R.id.distance_container);
         mRecyclerView = view.findViewById(R.id.item_list);
@@ -78,6 +81,21 @@ public class StoreFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        cartReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Item item = snapshot.getValue(Item.class);
+                    storeFragmentViewModel.addNewValue(item);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w(TAG, "onCancelled", databaseError.toException());
+                Toast.makeText(main, "Failed to load items from cart.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mDistanceReference.addValueEventListener(new ValueEventListener() {
             @Override
