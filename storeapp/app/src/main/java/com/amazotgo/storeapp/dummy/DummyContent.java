@@ -21,7 +21,7 @@ public class DummyContent {
     /**
      * A map of sample (dummy) items, by ID.
      */
-    public static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
+    private static final Map<String, DummyItem> ITEM_MAP = new HashMap<String, DummyItem>();
 
     private static final int COUNT = 25;
 
