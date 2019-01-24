@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StoreFragment extends Fragment {
@@ -67,7 +68,7 @@ public class StoreFragment extends Fragment {
 
         storeFragmentViewModel = ViewModelProviders.of(this).get(StoreFragmentViewModel.class);
         storeFragmentViewModel.init();
-        storeFragmentViewModel.getNicePlaces().observe(this, new Observer<List<Item>>() {
+        storeFragmentViewModel.getItems().observe(this, new Observer<List<Item>>() {
             @Override
             public void onChanged(@Nullable List<Item> items) {
                 mAdapter.notifyDataSetChanged();
@@ -85,10 +86,12 @@ public class StoreFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 storeFragmentViewModel.clearItems();
+                List<Item> items = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Item item = snapshot.getValue(Item.class);
-                    storeFragmentViewModel.addNewValue(item);
+                    items.add(item);
                 }
+                storeFragmentViewModel.setItems(items);
             }
 
             @Override
@@ -118,7 +121,7 @@ public class StoreFragment extends Fragment {
     }
 
     private void initRecyclerView() {
-        mAdapter = new RecyclerAdapter(this.getContext(), storeFragmentViewModel.getNicePlaces().getValue());
+        mAdapter = new RecyclerAdapter(this.getContext(), storeFragmentViewModel.getItems().getValue());
         RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);

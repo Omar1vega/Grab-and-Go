@@ -10,36 +10,35 @@ import com.amazotgo.storeapp.repositories.ItemRepository;
 import java.util.List;
 
 class StoreFragmentViewModel extends ViewModel {
-    private MutableLiveData<List<Item>> mNicePlaces;
-    private MutableLiveData<Boolean> mIsUpdating = new MutableLiveData<>();
+    private MutableLiveData<List<Item>> items;
 
     void init() {
-        if (mNicePlaces != null) {
+        if (items != null) {
             return;
         }
         ItemRepository mRepo = ItemRepository.getInstance();
-        mNicePlaces = mRepo.getItems();
-    }
-
-    void addNewValue(final Item nicePlace) {
-        List<Item> currentItems = mNicePlaces.getValue();
-        if (currentItems != null && !currentItems.contains(nicePlace)) {
-            currentItems.add(nicePlace);
-        }
-        mIsUpdating.setValue(true);
-        mNicePlaces.postValue(currentItems);
-
+        items = mRepo.getItems();
     }
 
     void clearItems() {
-        List<Item> currentItems = mNicePlaces.getValue();
+        List<Item> currentItems = items.getValue();
         if (currentItems != null) {
             currentItems.clear();
-            mNicePlaces.postValue(currentItems);
+            items.postValue(currentItems);
         }
     }
 
-    LiveData<List<Item>> getNicePlaces() {
-        return mNicePlaces;
+    LiveData<List<Item>> getItems() {
+        return items;
+    }
+
+    void setItems(List<Item> itemList) {
+        clearItems();
+        List<Item> currentItems = items.getValue();
+        if (currentItems != null) {
+            currentItems.addAll(itemList);
+            items.postValue(currentItems);
+        }
+
     }
 }
