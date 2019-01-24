@@ -84,6 +84,7 @@ public class StoreFragment extends Fragment {
         cartReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                storeFragmentViewModel.clearItems();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Item item = snapshot.getValue(Item.class);
                     storeFragmentViewModel.addNewValue(item);

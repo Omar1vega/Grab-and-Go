@@ -9,7 +9,7 @@ import com.amazotgo.storeapp.repositories.ItemRepository;
 
 import java.util.List;
 
-public class StoreFragmentViewModel extends ViewModel {
+class StoreFragmentViewModel extends ViewModel {
     private MutableLiveData<List<Item>> mNicePlaces;
     private MutableLiveData<Boolean> mIsUpdating = new MutableLiveData<>();
 
@@ -31,12 +31,15 @@ public class StoreFragmentViewModel extends ViewModel {
 
     }
 
-    LiveData<List<Item>> getNicePlaces() {
-        return mNicePlaces;
+    void clearItems() {
+        List<Item> currentItems = mNicePlaces.getValue();
+        if (currentItems != null) {
+            currentItems.clear();
+            mNicePlaces.postValue(currentItems);
+        }
     }
 
-
-    public LiveData<Boolean> getIsUpdating() {
-        return mIsUpdating;
+    LiveData<List<Item>> getNicePlaces() {
+        return mNicePlaces;
     }
 }
