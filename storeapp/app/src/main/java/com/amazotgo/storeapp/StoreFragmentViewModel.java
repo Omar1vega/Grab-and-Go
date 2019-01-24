@@ -3,7 +3,6 @@ package com.amazotgo.storeapp;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.os.AsyncTask;
 
 import com.amazotgo.storeapp.models.Item;
 import com.amazotgo.storeapp.repositories.ItemRepository;
@@ -12,44 +11,27 @@ import java.util.List;
 
 public class StoreFragmentViewModel extends ViewModel {
     private MutableLiveData<List<Item>> mNicePlaces;
-    private ItemRepository mRepo;
     private MutableLiveData<Boolean> mIsUpdating = new MutableLiveData<>();
 
-    public void init() {
+    void init() {
         if (mNicePlaces != null) {
             return;
         }
-        mRepo = ItemRepository.getInstance();
-        mNicePlaces = mRepo.getNicePlaces();
+        ItemRepository mRepo = ItemRepository.getInstance();
+        mNicePlaces = mRepo.getItems();
     }
 
-    public void addNewValue(final Item nicePlace) {
+    void addNewValue(final Item nicePlace) {
+        List<Item> currentItems = mNicePlaces.getValue();
+        if (currentItems != null && !currentItems.contains(nicePlace)) {
+            currentItems.add(nicePlace);
+        }
         mIsUpdating.setValue(true);
+        mNicePlaces.postValue(currentItems);
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                List<Item> currentPlaces = mNicePlaces.getValue();
-                currentPlaces.add(nicePlace);
-                mNicePlaces.postValue(currentPlaces);
-                mIsUpdating.postValue(false);
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        }.execute();
     }
 
-    public LiveData<List<Item>> getNicePlaces() {
+    LiveData<List<Item>> getNicePlaces() {
         return mNicePlaces;
     }
 
