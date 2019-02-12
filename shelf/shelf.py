@@ -12,6 +12,10 @@ echoPin = 18
 MAX_DISTANCE = 220  # define the maximum measured distance
 timeOut = MAX_DISTANCE * 60  # calculate timeout according to the maximum measured distance
 
+itemPresent = True
+itemAdded = False
+itemRemoved = False
+
 firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials.json'),
 							  {'databaseURL': 'https://androidsample-225db.firebaseio.com/'})
 root = db.reference('distance')
@@ -69,38 +73,28 @@ def setup():
 	GPIO.setup(echoPin, GPIO.IN)
 
 
-itemPresent = True
-itemAdded = False
-itemRemoved = False
-
-
-def awayMode():
+def main():
 	global itemPresent, itemAdded, itemRemoved
-
-	distance = getDistance()
-	print("distance =", distance)
-
-	if (37 - 4 < distance < 37 + 4):
-		itemPresent = True
-
-	if (distance > 54 - 4):
-		itemPresent = False
-
-	if (not itemPresent and not itemAdded):
-		addItem()
-		itemAdded = True
-
-	if (itemPresent and not itemRemoved and itemAdded):
-		removeItem()
-		itemRemoved = True
-		itemAdded = False
-
-	time.sleep(0.5)
-
-
-def loop():
 	while True:
-		awayMode()
+		distance = getDistance()
+		print("distance =", distance)
+
+		if (37 - 4 < distance < 37 + 4):
+			itemPresent = True
+
+		if (distance > 54 - 4):
+			itemPresent = False
+
+		if (not itemPresent and not itemAdded):
+			addItem()
+			itemAdded = True
+
+		if (itemPresent and not itemRemoved and itemAdded):
+			removeItem()
+			itemRemoved = True
+			itemAdded = False
+
+		time.sleep(0.5)
 
 
 def destroy():
@@ -111,6 +105,6 @@ if __name__ == '__main__':
 	print('Program is starting ... ')
 	setup()
 	try:
-		loop()
+		main()
 	except KeyboardInterrupt:
 		destroy()
