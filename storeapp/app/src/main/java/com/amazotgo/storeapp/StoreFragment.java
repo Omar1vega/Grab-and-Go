@@ -87,11 +87,17 @@ public class StoreFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 storeFragmentViewModel.clearItems();
                 List<Item> items = new ArrayList<>();
+                boolean itemsChanged = false;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Item item = snapshot.getValue(Item.class);
-                    items.add(item);
+                    if (snapshot.getValue() != null && !snapshot.getValue().equals("")) {
+                        itemsChanged = true;
+                        Item item = snapshot.getValue(Item.class);
+                        items.add(item);
+                    }
                 }
-                storeFragmentViewModel.setItems(items);
+                if (itemsChanged) {
+                    storeFragmentViewModel.setItems(items);
+                }
             }
 
             @Override
