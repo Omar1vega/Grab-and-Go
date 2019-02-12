@@ -21,6 +21,28 @@ timeOut = MAX_DISTANCE * 60  # calculate timeout according to the maximum measur
 firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials.json'),
                               {'databaseURL': 'https://androidsample-225db.firebaseio.com/'})
 root = db.reference('distance')
+cart = db.reference("carts/8mBk742Op7cpW2RYZkb4yRoWpN92")
+
+item = {'name':'LaCroix', "imageUrl":"https://images-na.ssl-images-amazon.com/images/I/51ans2c7qUL.jpg"}
+
+itemKey = ''
+
+def addItem():
+    items = cart.child("items")
+    newItemKey = items.push()
+
+    global itemKey
+    itemKey = newItemKey
+
+    newItemKey.set(item)
+
+def removeItem():
+    global itemKey
+    itemKey.delete()
+
+#    print("itemKey = ", itemKey)
+#    itemRef = cart.child("items").child(str(itemKey))
+#    itemRef.remove()
 
 
 def updateDistance(distance):
@@ -63,16 +85,39 @@ def checkDistance(distance):
 personAlerted = False
 counter = 0
 
+itemPresent = True
+itemAdded = False
+itemRemoved = False
+
 
 def awayMode():
+    global itemPresent
+    global itemAdded
+    global itemRemoved
+
     distance = getDistance()
     print("distance =", distance)
 
     updateDistance(int(distance))
 
-    # if (checkDistance(distance)):
-    # update firebase
-    time.sleep(3)
+    if(distance > 37-4 and distance < 37+4):
+        itemPresent = True
+
+    if(distance > 54 -4  ):
+        itemPresent = False
+
+    if(not itemPresent and not itemAdded):
+        addItem()
+        itemAdded = True
+
+    if(itemPresent and not itemRemoved and itemAdded):
+        removeItem()
+        itemRemoved = True
+        itemAdded = False
+
+
+
+    time.sleep(0.5) 
 
 
 def loop():
