@@ -12,7 +12,7 @@ def takePicture():
 
 def uploadToS3(filepath):
     s3 = boto3.resource('s3')
-    uploadPath = "pickups" + filepath.split("/")[-1]
+    uploadPath = "pickups/" + filepath.split("/")[-1]
     s3.meta.client.upload_file(filepath, 'amazotgo', uploadPath)
     return uploadPath
 
