@@ -43,6 +43,7 @@ def recognize(filepath):
 
         print(data)
         print(data['Metadata'])
+        print(data["Tags"])
 
 
 if __name__ == '__main__':
