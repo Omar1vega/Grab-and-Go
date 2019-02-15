@@ -23,6 +23,7 @@ def recognize(filepath):
     threshold = 70
     maxFaces = 2
     client = boto3.client('rekognition')
+    s3 = boto3.client('s3')
 
     response = client.search_faces_by_image(CollectionId=collectionId,
                                             Image={'S3Object': {'Bucket': bucket, 'Name': filepath}},
@@ -35,6 +36,13 @@ def recognize(filepath):
     for match in faceMatches:
         print('FaceId:' + match['Face']['FaceId'])
         print('Similarity: ' + "{:.2f}".format(match['Similarity']) + "%")
+        print('FaceId:' + match['Face']['FaceId'])
+        key = ['Face']['ExternalImageId']
+
+        data = s3.head_object(Bucket=bucket, Key=key)
+
+        print(data)
+        print(data['Metadata'])
 
 
 if __name__ == '__main__':
@@ -45,6 +53,7 @@ if __name__ == '__main__':
             print(picture)
             s3Filepath = uploadToS3(picture)
             print(s3Filepath)
-            recognize(s3Filepath)
+            id = recognize(s3Filepath)
+
         else:
             print("Failed to take picture")
