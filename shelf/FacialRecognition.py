@@ -39,11 +39,12 @@ def recognize(filepath):
         print('FaceId:' + match['Face']['FaceId'])
         key = match['Face']['ExternalImageId']
 
-        data = s3.head_object(Bucket=bucket, Key=key)
+        response = s3.get_object_tagging(Bucket=bucket, Key=key)
 
-        print(data)
-        print(data['Metadata'])
-        print(data["Tags"])
+        print(response)
+        print(response['TagSet'])
+        if response['TagSet']["name"]:
+            print("Found user ---------> ", response['TagSet']["name"])
 
 
 if __name__ == '__main__':
