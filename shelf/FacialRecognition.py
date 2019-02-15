@@ -37,7 +37,7 @@ def recognize(filepath):
         print('FaceId:' + match['Face']['FaceId'])
         print('Similarity: ' + "{:.2f}".format(match['Similarity']) + "%")
         print('FaceId:' + match['Face']['FaceId'])
-        key = ['Face']['ExternalImageId']
+        key = match['Face']['ExternalImageId']
 
         data = s3.head_object(Bucket=bucket, Key=key)
 
