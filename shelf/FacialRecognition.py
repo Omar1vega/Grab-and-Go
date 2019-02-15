@@ -17,11 +17,34 @@ def uploadToS3(filepath):
     return uploadPath
 
 
+def recognize(filepath):
+    bucket = 'amazotgo'
+    collectionId = 'amazotgo_users'
+    threshold = 70
+    maxFaces = 2
+    client = boto3.client('rekognition')
+
+    response = client.search_faces_by_image(CollectionId=collectionId,
+                                            Image={'S3Object': {'Bucket': bucket, 'Name': filepath}},
+                                            FaceMatchThreshold=threshold,
+                                            MaxFaces=maxFaces)
+
+    faceMatches = response['FaceMatches']
+
+    print('Matching faces')
+    for match in faceMatches:
+        print('FaceId:' + match['Face']['FaceId'])
+        print('Similarity: ' + "{:.2f}".format(match['Similarity']) + "%")
+
+
 if __name__ == '__main__':
     while True:
+        a = raw_input("Press enter to take a pic")
         picture = takePicture()
         if picture:
             print(picture)
-            print(uploadToS3(picture))
+            s3Filepath = uploadToS3(picture)
+            print(s3Filepath)
+            recognize(s3Filepath)
         else:
             print("Failed to take picture")
