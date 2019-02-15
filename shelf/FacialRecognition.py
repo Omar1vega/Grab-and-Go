@@ -43,8 +43,9 @@ def recognize(filepath):
 
         print(response)
         print(response['TagSet'])
-        if response['TagSet']["name"]:
-            print("Found user ---------> ", response['TagSet']["name"])
+        for tag in response['TagSet']:
+            if tag['Key'] == 'name':
+                print("Found user --> ", tag["Value"])
 
 
 if __name__ == '__main__':
