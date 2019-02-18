@@ -59,8 +59,9 @@ public class StoreFragment extends Fragment {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDistanceReference = mDatabase.child("distance");
-        //TODO: get user id to replace sub dir
-        cartReference = mDatabase.child("carts/8mBk742Op7cpW2RYZkb4yRoWpN92/items");
+
+        String userId = main.getAuth().getCurrentUser().getUid();
+        cartReference = mDatabase.child("carts/" + userId + "/items");
 
         distanceContainer = view.findViewById(R.id.distance_container);
         mRecyclerView = view.findViewById(R.id.item_list);
