@@ -54,6 +54,7 @@ public class Main2Activity extends AppCompatActivity implements TransactionFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.app_name);
         setContentView(R.layout.activity_main2);
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
