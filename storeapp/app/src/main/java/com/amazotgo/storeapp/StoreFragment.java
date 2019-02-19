@@ -35,7 +35,7 @@ public class StoreFragment extends Fragment {
 
     private StoreFragmentViewModel storeFragmentViewModel;
 
-    private Main2Activity main;
+    private MainActivity main;
     private DatabaseReference mDatabase;
     private DatabaseReference mDistanceReference;
     private DatabaseReference cartReference;
@@ -55,7 +55,7 @@ public class StoreFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
-        main = (Main2Activity) getActivity();
+        main = (MainActivity) getActivity();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDistanceReference = mDatabase.child("distance");

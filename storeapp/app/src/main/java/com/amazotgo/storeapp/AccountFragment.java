@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class AccountFragment extends Fragment {
     private Button signOutButton;
-    private Main2Activity main;
+    private MainActivity main;
     private TextView authenticatedUser;
 
     public AccountFragment() {
@@ -23,7 +23,7 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
-        main = (Main2Activity) getActivity();
+        main = (MainActivity) getActivity();
 
         signOutButton = view.findViewById(R.id.signOutButton);
         signOutButton.setOnClickListener(new View.OnClickListener() {
