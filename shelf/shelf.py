@@ -7,6 +7,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+from FacialRecognition import takePicture, uploadToS3, recognize
+
 trigPin = 16
 echoPin = 18
 MAX_DISTANCE = 220  # define the maximum measured distance
@@ -26,8 +28,8 @@ item = {'name': 'LaCroix', "imageUrl": "https://images-na.ssl-images-amazon.com/
 itemKey = ''
 
 
-def add_item():
-    new_item_key = cart.child("items").push()
+def add_item(user):
+    new_item_key = db.reference("carts/"+user).child("items").push()
 
     global itemKey
     itemKey = new_item_key
@@ -86,7 +88,15 @@ def main():
             itemPresent = False
 
         if (not itemPresent and not itemAdded):
-            add_item()
+            picture = takePicture()
+            if picture:
+                print(picture)
+                s3Filepath = uploadToS3(picture)
+                print(s3Filepath)
+                id = recognize(s3Filepath)
+
+
+                add_item(id)
             itemAdded = True
 
         if (itemPresent and not itemRemoved and itemAdded):
