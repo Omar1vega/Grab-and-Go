@@ -93,7 +93,7 @@ def main():
                 print(picture)
                 s3Filepath = uploadToS3(picture)
                 print(s3Filepath)
-                id = recognize(s3Filepath)
+                id, name = recognize(s3Filepath)
 
 
                 add_item(id)
