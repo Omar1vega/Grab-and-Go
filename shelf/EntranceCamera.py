@@ -29,8 +29,12 @@ def remove_user(id):
 
 def main():
     while True:
-
-        print("Should run: " + str(should_run()))
+        shouldRun = str(should_run())
+        if shouldRun == "False":
+            print("firebase preventing execution")
+            continue
+        if shouldRun == "exit":
+            exit(0)
 
         users_in_store()
         picture = takePicture()
