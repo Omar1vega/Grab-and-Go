@@ -10,6 +10,11 @@ firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials
 
 root = db.reference('distance')
 in_store = db.reference("store/users/in")
+run = db.reference("devices/zero1")
+
+
+def should_run():
+    return run.get()
 
 
 def init_user(id, name):
@@ -24,15 +29,17 @@ def remove_user(id):
 
 def main():
     while True:
-        users_in_store()
 
+        print("Should run: " + str(should_run()))
+
+        users_in_store()
         picture = takePicture()
         if picture:
             print(picture)
             s3Filepath = uploadToS3(picture)
             print(s3Filepath)
             id, name = recognize(s3Filepath)
-            if (id and name):
+            if id and name:
                 init_user(id, name)
 
         time.sleep(1)
