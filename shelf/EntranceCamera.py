@@ -9,7 +9,7 @@ firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials
                               {'databaseURL': 'https://androidsample-225db.firebaseio.com/'})
 
 root = db.reference('distance')
-in_store = db.reference("stores/users/in")
+in_store = db.reference("store/users/in")
 
 
 def init_user(id, name):
