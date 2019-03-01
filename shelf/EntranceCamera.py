@@ -24,10 +24,7 @@ def remove_user(id):
 
 def main():
     while True:
-        print(
-            "*************************************************Current users in store: "
-            + str(users_in_store())
-            + "\n\n""*************************************************")
+        users_in_store()
 
         picture = takePicture()
         if picture:
@@ -42,7 +39,9 @@ def main():
 
 
 def users_in_store():
-    return in_store.get()
+    users = in_store.get()
+    if users:
+        print(users)
 
 
 if __name__ == '__main__':
