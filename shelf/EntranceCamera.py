@@ -24,6 +24,11 @@ def remove_user(id):
 
 def main():
     while True:
+        print(
+            "*************************************************Current users in store: "
+            + str(users_in_store())
+            + "\n\n""*************************************************")
+
         picture = takePicture()
         if picture:
             print(picture)
@@ -34,6 +39,10 @@ def main():
                 init_user(id, name)
 
         time.sleep(1)
+
+
+def users_in_store():
+    return in_store.get()
 
 
 if __name__ == '__main__':
