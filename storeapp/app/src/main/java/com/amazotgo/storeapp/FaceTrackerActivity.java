@@ -22,15 +22,21 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import com.amazotgo.storeapp.ui.camera.CameraSourcePreview;
 import com.amazotgo.storeapp.ui.camera.GraphicOverlay;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.CameraSource;
@@ -39,6 +45,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
@@ -53,6 +60,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private CameraSource mCameraSource = null;
     private CameraSourcePreview mPreview;
     private GraphicOverlay mGraphicOverlay;
+    private Button captureButton;
+    private ImageView image;
 
     //==============================================================================================
     // Activity Methods
@@ -68,6 +77,35 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.faceOverlay);
+        captureButton = findViewById(R.id.captureButton);
+        image = findViewById(R.id.imageView);
+
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] bytes) {
+
+                        // convert byte array into bitmap
+                        Bitmap loadedImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Matrix rotateMatrix = new Matrix();
+                        rotateMatrix.postRotate(270);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(loadedImage, 0, 0,
+                                loadedImage.getWidth(), loadedImage.getHeight(),
+                                rotateMatrix, false);
+
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+                        // save image into gallery
+                        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                        byte[] byteArray = stream.toByteArray();
+
+                        Glide.with(FaceTrackerActivity.this).load(byteArray).into(image);
+                    }
+                });
+            }
+        });
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -282,14 +320,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         GraphicFaceTracker(GraphicOverlay overlay) {
             mOverlay = overlay;
             mFaceGraphic = new FaceGraphic(overlay);
-        }
-
-        /**
-         * Start tracking the detected face instance within the face overlay.
-         */
-        @Override
-        public void onNewItem(int faceId, Face item) {
-            mFaceGraphic.setId(faceId);
         }
 
         /**
