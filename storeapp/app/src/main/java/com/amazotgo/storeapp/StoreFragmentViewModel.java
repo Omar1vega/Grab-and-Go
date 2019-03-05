@@ -9,7 +9,10 @@ import com.amazotgo.storeapp.repositories.ItemRepository;
 
 import java.util.List;
 
-class StoreFragmentViewModel extends ViewModel {
+public class StoreFragmentViewModel extends ViewModel {
+    public StoreFragmentViewModel() {
+    }
+
     private MutableLiveData<List<Item>> items;
 
     void init() {
