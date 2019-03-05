@@ -13,13 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazotgo.storeapp.adapters.RecyclerAdapter;
-import com.amazotgo.storeapp.models.Distance;
 import com.amazotgo.storeapp.models.Item;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,11 +33,7 @@ public class StoreFragment extends Fragment {
 
     private MainActivity main;
     private DatabaseReference mDatabase;
-    private DatabaseReference mDistanceReference;
     private DatabaseReference cartReference;
-
-    private TextView distanceContainer;
-    private Animation blink;
 
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
@@ -58,14 +50,11 @@ public class StoreFragment extends Fragment {
         main = (MainActivity) getActivity();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDistanceReference = mDatabase.child("distance");
 
         String userId = main.getAuth().getCurrentUser().getUid();
         cartReference = mDatabase.child("carts/" + userId + "/items");
 
-        distanceContainer = view.findViewById(R.id.distance_container);
         mRecyclerView = view.findViewById(R.id.item_list);
-        blink = AnimationUtils.loadAnimation(main, R.anim.blink);
 
         storeFragmentViewModel = ViewModelProviders.of(this).get(StoreFragmentViewModel.class);
         storeFragmentViewModel.init();
@@ -105,24 +94,6 @@ public class StoreFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.w(TAG, "onCancelled", databaseError.toException());
                 Toast.makeText(main, "Failed to load items from cart.", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mDistanceReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Distance distance = dataSnapshot.getValue(Distance.class);
-                if (distance != null) {
-                    distanceContainer.clearAnimation();
-                    distanceContainer.setText(String.format("%s cm", String.valueOf(distance.distance)));
-                    distanceContainer.startAnimation(blink);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w(TAG, "onCancelled", databaseError.toException());
-                Toast.makeText(main, "Failed to load distance.", Toast.LENGTH_SHORT).show();
             }
         });
     }
