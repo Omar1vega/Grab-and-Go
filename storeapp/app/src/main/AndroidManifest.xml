@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.amazotgo.storeapp">
 
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -22,6 +26,11 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name="com.amazotgo.storeapp.FaceTrackerActivity"
+            android:label="Face Tracker"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -55,6 +55,9 @@ dependencies {
 
     //circle imageview
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    //google vision
+    implementation 'com.google.android.gms:play-services-vision:17.0.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
