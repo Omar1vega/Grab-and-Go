@@ -52,6 +52,25 @@ public class GraphicOverlay extends View {
     private int mFacing = CameraSource.CAMERA_FACING_BACK;
     private Set<Graphic> mGraphics = new HashSet<>();
 
+    /**
+     * Draws the overlay with its associated graphic objects.
+     */
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        synchronized (mLock) {
+            if ((mPreviewWidth != 0) && (mPreviewHeight != 0)) {
+                mWidthScaleFactor = (float) canvas.getWidth() / (float) mPreviewWidth;
+                mHeightScaleFactor = (float) canvas.getHeight() / (float) mPreviewHeight;
+            }
+
+            for (Graphic graphic : mGraphics) {
+                graphic.draw(canvas);
+            }
+        }
+    }
+
     public GraphicOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -100,25 +119,6 @@ public class GraphicOverlay extends View {
     }
 
     /**
-     * Draws the overlay with its associated graphic objects.
-     */
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        synchronized (mLock) {
-            if ((mPreviewWidth != 0) && (mPreviewHeight != 0)) {
-                mWidthScaleFactor = (float) getWidth() / (float) mPreviewWidth;
-                mHeightScaleFactor = (float) getHeight() / (float) mPreviewHeight;
-            }
-
-            for (Graphic graphic : mGraphics) {
-                graphic.draw(canvas);
-            }
-        }
-    }
-
-    /**
      * Base class for a custom graphics object to be rendered within the graphic overlay.  Subclass
      * this and implement the {@link Graphic#draw(Canvas)} method to define the
      * graphics element.  Add instances to the overlay using {@link GraphicOverlay#add(Graphic)}.
@@ -148,14 +148,14 @@ public class GraphicOverlay extends View {
          * Adjusts a horizontal value of the supplied value from the preview scale to the view
          * scale.
          */
-        protected float scaleX(float horizontal) {
+        public float scaleX(float horizontal) {
             return horizontal * mOverlay.mWidthScaleFactor;
         }
 
         /**
          * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
          */
-        protected float scaleY(float vertical) {
+        public float scaleY(float vertical) {
             return vertical * mOverlay.mHeightScaleFactor;
         }
 
@@ -163,7 +163,7 @@ public class GraphicOverlay extends View {
          * Adjusts the x coordinate from the preview's coordinate system to the view coordinate
          * system.
          */
-        protected float translateX(float x) {
+        public float translateX(float x) {
             if (mOverlay.mFacing == CameraSource.CAMERA_FACING_FRONT) {
                 return mOverlay.getWidth() - scaleX(x);
             } else {
@@ -175,11 +175,11 @@ public class GraphicOverlay extends View {
          * Adjusts the y coordinate from the preview's coordinate system to the view coordinate
          * system.
          */
-        protected float translateY(float y) {
+        public float translateY(float y) {
             return scaleY(y);
         }
 
-        protected void postInvalidate() {
+        public void postInvalidate() {
             mOverlay.postInvalidate();
         }
     }
