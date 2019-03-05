@@ -1,37 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/topLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:keepScreenOn="true"
+        android:orientation="vertical">
 
+        <com.amazotgo.storeapp.ui.camera.CameraSourcePreview
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <com.amazotgo.storeapp.ui.camera.CameraSourcePreview
-        android:id="@+id/preview"
-        android:layout_width="0dp"
-        android:layout_height="683dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+            <com.amazotgo.storeapp.ui.camera.GraphicOverlay
+                android:id="@+id/faceOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-        <com.amazotgo.storeapp.ui.camera.GraphicOverlay
-            android:id="@+id/faceOverlay"
+        </com.amazotgo.storeapp.ui.camera.CameraSourcePreview>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget34"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/captureButton"
+            android:layout_width="411dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/capture" />
+
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/face_pic"
+            tools:srcCompat="@tools:sample/avatars[3]" />
 
-    </com.amazotgo.storeapp.ui.camera.CameraSourcePreview>
+    </LinearLayout>
+</LinearLayout>
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="411dp"
-        android:layout_height="48dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="@+id/preview"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-</android.support.constraint.ConstraintLayout>
