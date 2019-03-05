@@ -32,7 +32,6 @@ public class StoreFragment extends Fragment {
     private StoreFragmentViewModel storeFragmentViewModel;
 
     private MainActivity main;
-    private DatabaseReference mDatabase;
     private DatabaseReference cartReference;
 
     private RecyclerView mRecyclerView;
@@ -49,7 +48,7 @@ public class StoreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_store, container, false);
         main = (MainActivity) getActivity();
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
         String userId = main.getAuth().getCurrentUser().getUid();
         cartReference = mDatabase.child("carts/" + userId + "/items");

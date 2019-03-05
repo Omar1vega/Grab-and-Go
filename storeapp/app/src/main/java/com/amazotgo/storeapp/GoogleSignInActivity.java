@@ -29,14 +29,11 @@ public class GoogleSignInActivity extends BaseActivity implements
 
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
-
+    public static GoogleSignInOptions googleSignInOptions;
     private FirebaseAuth mAuth;
-
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
-
-    public static GoogleSignInOptions googleSignInOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

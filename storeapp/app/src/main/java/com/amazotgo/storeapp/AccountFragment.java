@@ -11,9 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class AccountFragment extends Fragment {
-    private Button signOutButton;
     private MainActivity main;
-    private TextView authenticatedUser;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -25,7 +23,7 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
         main = (MainActivity) getActivity();
 
-        signOutButton = view.findViewById(R.id.signOutButton);
+        Button signOutButton = view.findViewById(R.id.signOutButton);
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -33,7 +31,7 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        authenticatedUser = view.findViewById(R.id.auth_user_name);
+        TextView authenticatedUser = view.findViewById(R.id.auth_user_name);
         if (main.getAuth().getCurrentUser().getDisplayName() != null) {
             authenticatedUser.setText(main.getAuth().getCurrentUser().getDisplayName());
         }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,9 +20,6 @@ import com.amazotgo.storeapp.dummy.DummyContent.DummyItem;
  * interface.
  */
 public class TransactionFragment extends Fragment {
-
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
 
     private OnListFragmentInteractionListener mListener;
 
@@ -49,11 +45,8 @@ public class TransactionFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
+            // TODO: Customize parameters
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
             recyclerView.setAdapter(new MyTransactionRecyclerViewAdapter(DummyContent.ITEMS, mListener));
         }
         return view;
