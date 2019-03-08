@@ -9,8 +9,8 @@ from firebase_admin import db
 
 from FacialRecognition import takePicture, uploadToS3, recognize
 
-trigPin = 16
-echoPin = 18
+trigPin = 18
+echoPin = 22
 MAX_DISTANCE = 220  # define the maximum measured distance
 timeOut = MAX_DISTANCE * 60  # calculate timeout according to the maximum measured distance
 
