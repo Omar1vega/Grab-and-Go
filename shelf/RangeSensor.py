@@ -1,5 +1,6 @@
 import atexit
 import time
+from collections import deque
 
 import RPi.GPIO as GPIO
 
@@ -19,6 +20,26 @@ def pulse_in(pin, level, time_out):  # function pulseIn: obtain pulse time of a 
     return (time.time() - t0) * 1000000
 
 
+def stable(dq):
+    if len(dq) != dq.maxlen:
+        return 0
+
+    total = 0
+    for num in dq:
+        total += num
+    average = total // len(dq)
+
+    for num in dq:
+        if num > (average + 1) or num < (average - 1):
+            return 0
+
+    return average
+
+
+def cleanup():
+    GPIO.cleanup()
+
+
 class RangeSensor:
     def __init__(self, trigger_pin=24, echo_pin=25):
         self.trigger_pin = trigger_pin
@@ -28,7 +49,7 @@ class RangeSensor:
         GPIO.setup(trigger_pin, GPIO.OUT)
         GPIO.setup(echo_pin, GPIO.IN)
 
-        atexit.register(self.cleanup)
+        atexit.register(cleanup)
 
     def __str__(self):
         return "(Trigger Pin: " + str(self.trigger_pin) + " Echo Pin: " + str(self.echo_pin) + ")"
@@ -42,8 +63,16 @@ class RangeSensor:
         distance = ping_time * 340.0 / 2.0 / 10000.0  # the sound speed is 340m/s, and calculate distance
         return int(distance)
 
-    def cleanup(self):
-        GPIO.cleanup()
+    def calibrate(self):
+        d = deque(maxlen=10)
+        while True:
+            distance = self.get_distance()
+            print("Distance: " + str(distance))
+            d.append(distance)
+            stability = stable(d)
+            if stability != 0:
+                return stability
+            time.sleep(0.5)
 
 
 if __name__ == '__main__':
