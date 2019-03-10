@@ -1,3 +1,4 @@
+import atexit
 import time
 
 import RPi.GPIO as GPIO
@@ -27,6 +28,8 @@ class RangeSensor:
         GPIO.setup(trigger_pin, GPIO.OUT)
         GPIO.setup(echo_pin, GPIO.IN)
 
+        atexit.register(self.cleanup)
+
     def __str__(self):
         return "(Trigger Pin: " + str(self.trigger_pin) + " Echo Pin: " + str(self.echo_pin) + ")"
 
@@ -38,6 +41,9 @@ class RangeSensor:
         ping_time = pulse_in(self.echo_pin, GPIO.HIGH, timeOut)  # read plus time of echoPin
         distance = ping_time * 340.0 / 2.0 / 10000.0  # the sound speed is 340m/s, and calculate distance
         return int(distance)
+
+    def cleanup(self):
+        GPIO.cleanup()
 
 
 if __name__ == '__main__':
