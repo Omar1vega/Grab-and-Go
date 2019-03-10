@@ -22,23 +22,23 @@ class Menu:
                 position = len(self.items) - 1
 
             item = self.items[position]
-            self.display.print("Choose Item: " + item["name"])
+            self.display.print_lines("Choose Item: " + item["name"])
             button = self.buttons.get_button_pressed()
             if button == self.buttons.DOWN:
                 position += 1
             elif button == self.buttons.UP:
                 position -= 1
             elif button == self.buttons.A:
-                self.display.print("Selected Item: " + item["name"])
+                self.display.print_lines("Selected Item: " + item["name"])
                 return item
 
     def calibrate_empty(self):
-        self.display.print("Calibrate Empty Shelf", "", "Remove All Items", "", "Press A to proceed")
+        self.display.print_lines("Calibrate Empty Shelf", "", "Remove All Items", "", "Press A to proceed")
         button = self.buttons.get_button_pressed()
         if button == self.buttons.A:
-            self.display.print("Calibrating...")
+            self.display.print_lines("Calibrating...")
             empty_distance = self.sensor.calibrate()
-            self.display.print("Calibration Done!", "Empty Distance: " + str(empty_distance))
+            self.display.print_lines("Calibration Done!", "Empty Distance: " + str(empty_distance))
             self.empty = empty_distance
 
 

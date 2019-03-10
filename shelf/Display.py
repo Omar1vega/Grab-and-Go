@@ -22,7 +22,7 @@ class Display:
         self.display.clear()
         self.display.display()
 
-    def print(self, *args):
+    def print_lines(self, *args):
         line = 0
         for string in args:
             self.draw.rectangle((0, 0, self.display.width, self.display.height), outline=0, fill=0)
@@ -36,5 +36,5 @@ if __name__ == '__main__':
     range_sensor = RangeSensor()
     display = Display()
     while True:
-        display.print(time.strftime("%H:%M:%S"), "Distance: " + str(range_sensor.get_distance()) + "cm")
+        display.print_lines(time.strftime("%H:%M:%S"), "Distance: " + str(range_sensor.get_distance()) + "cm")
         time.sleep(1)
