@@ -19,11 +19,11 @@ def pulse_in(pin, level, time_out):  # function pulseIn: obtain pulse time of a 
 
 
 class RangeSensor:
-    def __init__(self, trigger_pin=18, echo_pin=22):
+    def __init__(self, trigger_pin=24, echo_pin=25):
         self.trigger_pin = trigger_pin
         self.echo_pin = echo_pin
 
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(trigger_pin, GPIO.OUT)
         GPIO.setup(echo_pin, GPIO.IN)
 
