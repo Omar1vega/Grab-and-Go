@@ -7,6 +7,7 @@ from RangeSensor import *
 class Menu:
     def __init__(self):
         self.empty = 0
+        self.item_size = 0
         self.display = Display()
         self.firebase = Firebase()
         self.buttons = Buttons()
@@ -40,6 +41,17 @@ class Menu:
             empty_distance = self.sensor.calibrate()
             self.display.print_lines("Calibration Done!", "Empty Distance: " + str(empty_distance))
             self.empty = empty_distance
+            time.sleep(3)
+
+    def calibrate_item_size(self):
+        self.display.print_lines("Calibrate Item Size", "", "Place 1 Item", "", "Press A to proceed")
+        button = self.buttons.get_button_pressed()
+        if button == self.buttons.A:
+            self.display.print_lines("Calibrating...")
+            item_size = self.empty - self.sensor.calibrate()
+            self.display.print_lines("Calibration Done!", "Item Size: " + str(item_size))
+            self.item_size = item_size
+            time.sleep(3)
 
 
 def main():
