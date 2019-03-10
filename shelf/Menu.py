@@ -58,6 +58,7 @@ def main():
     menu = Menu()
     menu.choose_item()
     menu.calibrate_empty()
+    menu.calibrate_item_size()
 
 
 if __name__ == '__main__':
