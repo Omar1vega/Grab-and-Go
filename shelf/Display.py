@@ -6,50 +6,35 @@ from PIL import ImageFont
 # Raspberry Pi pin configuration:
 from RangeSensor import *
 
-RST = None  # on the PiOLED this pin isnt used
 
-# 128x64 display with hardware I2C:
-display = Adafruit_SSD1306.SSD1306_128_64(rst=RST)
+class Display:
+    def __init__(self):
+        self.display = Adafruit_SSD1306.SSD1306_128_64(rst=None)
+        self.display.begin()
+        self.display.clear()
+        self.image = Image.new('1', (self.display.width, self.display.height))
+        self.draw = ImageDraw.Draw(self.image)
+        self.draw.rectangle((0, 0, self.display.width, self.display.height), outline=0, fill=0)
+        self.font = ImageFont.load_default()
+        atexit.register(self.clear)
 
-display.begin()
+    def clear(self):
+        self.display.clear()
+        self.display.display()
 
-# Clear display.
-display.clear()
-display.display()
+    def print(self, *args):
+        line = 0
+        for string in args:
+            self.draw.rectangle((0, 0, self.display.width, self.display.height), outline=0, fill=0)
+            self.draw.text((0, line), string, font=self.font, fill=255)
+            line += 8
+        self.display.image(self.image)
+        self.display.display()
 
-# Create blank image for drawing.
-# Make sure to create image with mode '1' for 1-bit color.
-width = display.width
-height = display.height
-image = Image.new('1', (width, height))
 
-# Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
-
-# Draw a black filled box to clear the image.
-draw.rectangle((0, 0, width, height), outline=0, fill=0)
-
-top = -2
-x = 0
-font = ImageFont.load_default()
-
-try:
+if __name__ == '__main__':
     range_sensor = RangeSensor()
+    display = Display()
     while True:
-        # Draw a black filled box to clear the image.
-        draw.rectangle((0, 0, width, height), outline=0, fill=0)
-
-        # Write two lines of text.
-
-        draw.text((x, top), time.strftime("%H:%M:%S"), font=font, fill=255)
-        draw.text((x, top + 8), "Distance: " + str(range_sensor.get_distance()) + "cm", font=font, fill=255)
-
-        # Display image.
-        display.image(image)
-        display.display()
+        display.print(time.strftime("%H:%M:%S"), "Distance: " + str(range_sensor.get_distance()) + "cm")
         time.sleep(1)
-
-except KeyboardInterrupt:
-    display.clear()
-    display.display()
-    exit(0)
