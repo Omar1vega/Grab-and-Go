@@ -14,7 +14,7 @@ class Firebase:
 
     def add_item(self, item, user):
         new_item_key = db.reference("carts/" + user).child("items").push()
-        new_item_key.set(item.get_value())
+        new_item_key.set(item)
 
         self.cache[user] = new_item_key
 
