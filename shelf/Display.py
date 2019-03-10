@@ -24,8 +24,8 @@ class Display:
 
     def print_lines(self, *args):
         line = 0
+        self.draw.rectangle((0, 0, self.display.width, self.display.height), outline=0, fill=0)
         for string in args:
-            self.draw.rectangle((0, 0, self.display.width, self.display.height), outline=0, fill=0)
             self.draw.text((0, line), string, font=self.font, fill=255)
             line += 8
         self.display.image(self.image)
