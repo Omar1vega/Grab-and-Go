@@ -13,6 +13,7 @@ def calibrate(range_sensor):
         stability = stable(d)
         if stability != 0:
             return stability
+        time.sleep(0.5)
 
 
 def main():
