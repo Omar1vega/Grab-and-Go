@@ -1,0 +1,47 @@
+import time
+
+import RPi.GPIO as GPIO
+
+MAX_DISTANCE = 220  # define the maximum measured distance
+timeOut = MAX_DISTANCE * 60  # calculate timeout according to the maximum measured distance
+
+
+def pulse_in(pin, level, time_out):  # function pulseIn: obtain pulse time of a pin
+    t0 = time.time()
+    while GPIO.input(pin) != level:
+        if (time.time() - t0) > time_out * 0.000001:
+            return 0
+    t0 = time.time()
+    while GPIO.input(pin) == level:
+        if (time.time() - t0) > time_out * 0.000001:
+            return 0
+    return (time.time() - t0) * 1000000
+
+
+class RangeSensor:
+    def __init__(self, trigger_pin=18, echo_pin=22):
+        self.trigger_pin = trigger_pin
+        self.echo_pin = echo_pin
+
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(trigger_pin, GPIO.OUT)
+        GPIO.setup(echo_pin, GPIO.IN)
+
+    def __str__(self):
+        return "(Trigger Pin: " + str(self.trigger_pin) + " Echo Pin: " + str(self.echo_pin) + ")"
+
+    def get_distance(self):
+        GPIO.output(self.trigger_pin, GPIO.HIGH)  # make trigPin send 10us high level
+        time.sleep(0.00001)  # 10us
+        GPIO.output(self.trigger_pin, GPIO.LOW)
+
+        ping_time = pulse_in(self.echo_pin, GPIO.HIGH, timeOut)  # read plus time of echoPin
+        distance = ping_time * 340.0 / 2.0 / 10000.0  # the sound speed is 340m/s, and calculate distance
+        return int(distance)
+
+
+if __name__ == '__main__':
+    range_sensor = RangeSensor()
+    print(range_sensor)
+    distance = range_sensor.get_distance()
+    print("Distance: " + str(range_sensor.get_distance()) + "cm")
