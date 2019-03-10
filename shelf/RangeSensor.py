@@ -41,9 +41,10 @@ def cleanup():
 
 
 class RangeSensor:
-    def __init__(self, trigger_pin=24, echo_pin=25):
+    def __init__(self, trigger_pin=24, echo_pin=25, display=None):
         self.trigger_pin = trigger_pin
         self.echo_pin = echo_pin
+        self.display = display
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(trigger_pin, GPIO.OUT)
@@ -67,7 +68,11 @@ class RangeSensor:
         d = deque(maxlen=10)
         while True:
             distance = self.get_distance()
-            print("Distance: " + str(distance))
+            status = "Distance: " + str(distance)
+            if self.display:
+                self.display.print_lines(status)
+            else:
+                print(status)
             d.append(distance)
             stability = stable(d)
             if stability != 0:

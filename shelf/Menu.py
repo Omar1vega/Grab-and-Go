@@ -10,7 +10,7 @@ class Menu:
         self.display = Display()
         self.firebase = Firebase()
         self.buttons = Buttons()
-        self.sensor = RangeSensor()
+        self.sensor = RangeSensor(self.display)
         self.items = self.firebase.get_items()
 
     def choose_item(self):
