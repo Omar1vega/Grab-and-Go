@@ -45,6 +45,7 @@ class Menu:
 def main():
     menu = Menu()
     menu.choose_item()
+    menu.calibrate_empty()
 
 
 if __name__ == '__main__':
