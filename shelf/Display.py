@@ -42,7 +42,7 @@ try:
         # Write two lines of text.
 
         draw.text((x, top), time.strftime("%H:%M:%S"), font=font, fill=255)
-        draw.text((x, top + 8), "Distance: " + str(range_sensor.get_distance()) + "cm")
+        draw.text((x, top + 8), "Distance: " + str(range_sensor.get_distance()) + "cm", font=font, fill=255)
 
         # Display image.
         display.image(image)
