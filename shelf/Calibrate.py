@@ -1,14 +1,13 @@
 from collections import deque
 from random import randint
 
-from shelf import getDistance, setup
+from RangeSensor import *
 
 
-def calibrate():
-    setup()
+def calibrate(range_sensor):
     d = deque(maxlen=10)
     while True:
-        distance = int(getDistance())
+        distance = range_sensor.get_distance()
         print("Distance: " + str(distance))
         d.append(distance)
         stability = stable(d)
@@ -53,5 +52,6 @@ def stable(dq):
 
 
 if __name__ == '__main__':
-    stability = calibrate()
+    range_sensor = RangeSensor()
+    stability = calibrate(range_sensor)
     print("Stable at " + str(stability))
