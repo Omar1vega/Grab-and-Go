@@ -1,12 +1,10 @@
-import time
-
 import Adafruit_SSD1306
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
 # Raspberry Pi pin configuration:
-from shelf import getDistance
+from RangeSensor import *
 
 RST = None  # on the PiOLED this pin isnt used
 
@@ -36,6 +34,7 @@ x = 0
 font = ImageFont.load_default()
 
 try:
+    range_sensor = RangeSensor()
     while True:
         # Draw a black filled box to clear the image.
         draw.rectangle((0, 0, width, height), outline=0, fill=0)
@@ -43,7 +42,7 @@ try:
         # Write two lines of text.
 
         draw.text((x, top), time.strftime("%H:%M:%S"), font=font, fill=255)
-        draw.text((x, top + 8), "Distance: " + str(int(getDistance())) + "cm")
+        draw.text((x, top + 8), "Distance: " + str(range_sensor.get_distance()) + "cm")
 
         # Display image.
         display.image(image)
