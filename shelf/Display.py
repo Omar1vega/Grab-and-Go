@@ -6,6 +6,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 
 # Raspberry Pi pin configuration:
+from shelf import getDistance
+
 RST = None  # on the PiOLED this pin isnt used
 
 # 128x64 display with hardware I2C:
@@ -41,6 +43,7 @@ try:
         # Write two lines of text.
 
         draw.text((x, top), time.strftime("%H:%M:%S"), font=font, fill=255)
+        draw.text((x, top + 8), "Distance: " + str(int(getDistance())) + "cm")
 
         # Display image.
         display.image(image)
