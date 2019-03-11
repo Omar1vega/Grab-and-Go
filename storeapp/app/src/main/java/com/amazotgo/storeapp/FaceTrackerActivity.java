@@ -21,19 +21,33 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.rekognition.AmazonRekognition;
+import com.amazonaws.services.rekognition.AmazonRekognitionClient;
+import com.amazonaws.services.rekognition.model.Image;
+import com.amazonaws.services.rekognition.model.IndexFacesRequest;
+import com.amazonaws.services.rekognition.model.S3Object;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectTagging;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.Tag;
 import com.amazotgo.storeapp.ui.camera.CameraSourcePreview;
 import com.amazotgo.storeapp.ui.camera.GraphicOverlay;
 import com.bumptech.glide.Glide;
@@ -44,16 +58,22 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity for the face tracker app.  This app detects faces with the rear facing camera, and draws
  * overlay graphics to indicate the position, size, and ID of each face.
  */
-public final class FaceTrackerActivity extends AppCompatActivity {
+public final class FaceTrackerActivity extends BaseActivity {
     private static final String TAG = "FaceTracker";
+    private static final String COLLECTION_ID = "amazotgo_users";
+    private static final String BUCKET = "amazotgo";
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -62,6 +82,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private GraphicOverlay mGraphicOverlay;
     private Button captureButton;
     private ImageView image;
+
+    private FirebaseAuth mAuth;
+    private AmazonS3Client s3Client;
+    private AmazonRekognition rekognitionClient;
 
     //==============================================================================================
     // Activity Methods
@@ -75,10 +99,17 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_face_tracker);
 
+        mAuth = FirebaseAuth.getInstance();
+
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.faceOverlay);
         captureButton = findViewById(R.id.captureButton);
         image = findViewById(R.id.imageView);
+
+        AWSCredentials credentials = new BasicAWSCredentials("AKIAJ4QWLISTMGYRHC4A", "ScXqL+enloXIxYUgE2cJ53kPmT7bwQokqa34KPo0");
+        s3Client = new AmazonS3Client(credentials, Region.getRegion(Regions.US_EAST_2));
+        rekognitionClient = new AmazonRekognitionClient(credentials);
+        rekognitionClient.setRegion(Region.getRegion(Regions.US_EAST_2));
 
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +117,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] bytes) {
-
                         // convert byte array into bitmap
                         Bitmap loadedImage = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         Matrix rotateMatrix = new Matrix();
@@ -102,6 +132,18 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                         byte[] byteArray = stream.toByteArray();
 
                         Glide.with(FaceTrackerActivity.this).load(byteArray).into(image);
+                        List<Tag> tags = new ArrayList<>();
+                        if (mAuth.getCurrentUser().getDisplayName() != null) {
+                            tags.add(new Tag("name", mAuth.getCurrentUser().getDisplayName()));
+                        }
+                        tags.add(new Tag("user", mAuth.getCurrentUser().getUid()));
+
+                        ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);
+
+                        final PutObjectRequest request = new PutObjectRequest(BUCKET, mAuth.getCurrentUser().getUid() + ".jpg", inputStream, null);
+                        request.setTagging(new ObjectTagging(tags));
+
+                        new UploadToS3Task(request).execute();
                     }
                 });
             }
@@ -348,6 +390,49 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onDone() {
             mOverlay.remove(mFaceGraphic);
+        }
+    }
+
+    protected class UploadToS3Task extends AsyncTask<Void, Void, String> {
+
+        private PutObjectRequest request;
+
+        UploadToS3Task(PutObjectRequest request) {
+            this.request = request;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressDialog();
+        }
+
+        protected String doInBackground(Void... params) {
+            s3Client.putObject(request);
+
+            String photoName = request.getKey();
+
+            Image image = new Image()
+                    .withS3Object(new S3Object()
+                            .withBucket(BUCKET)
+                            .withName(photoName));
+
+
+            IndexFacesRequest indexFacesRequest = new IndexFacesRequest()
+                    .withImage(image)
+                    .withCollectionId(COLLECTION_ID)
+                    .withExternalImageId(photoName)
+                    .withDetectionAttributes("DEFAULT");
+
+            rekognitionClient.indexFaces(indexFacesRequest);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            hideProgressDialog();
+            startActivity(new Intent(FaceTrackerActivity.this, MainActivity.class));
         }
     }
 }
