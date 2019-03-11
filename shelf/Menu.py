@@ -8,6 +8,7 @@ class Menu:
     def __init__(self):
         self.empty = 0
         self.item_size = 0
+        self.margin = 0
         self.display = Display()
         self.firebase = Firebase()
         self.buttons = Buttons()
@@ -39,7 +40,7 @@ class Menu:
         if button == self.buttons.A:
             self.display.print_lines("Calibrating...")
             empty_distance = self.sensor.calibrate()
-            self.display.print_lines("Calibration Done!", "Empty Distance: " + str(empty_distance))
+            self.display.print_lines("Calibration Done!", "Empty Distance: " + str(empty_distance) + "cm")
             self.empty = empty_distance
             time.sleep(3)
 
@@ -49,8 +50,31 @@ class Menu:
         if button == self.buttons.A:
             self.display.print_lines("Calibrating...")
             item_size = self.empty - self.sensor.calibrate()
-            self.display.print_lines("Calibration Done!", "Item Size: " + str(item_size))
+            self.display.print_lines("Calibration Done!", "Item Size: " + str(item_size) + "cm")
             self.item_size = item_size
+            time.sleep(3)
+
+    def fill_shelf(self):
+        self.display.print_lines("Fill Shelf With Items", "", "Press A When Finished")
+        button = self.buttons.get_button_pressed()
+        if button == self.buttons.A:
+            self.display.print_lines("Calculating Item Quantity...")
+            time.sleep(3)
+            full_distance = self.sensor.calibrate()
+
+            item_count = 0
+            current_distance = full_distance
+            while True:
+                current_distance += self.item_size
+                delta = abs(self.empty - current_distance)
+                if delta > self.item_size:
+                    item_count += 1
+                else:
+                    self.margin = delta
+                    break
+
+            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!",
+                                     "Margin: " + str(self.margin) + "cm")
             time.sleep(3)
 
 
@@ -59,6 +83,7 @@ def main():
     menu.choose_item()
     menu.calibrate_empty()
     menu.calibrate_item_size()
+    menu.fill_shelf()
 
 
 if __name__ == '__main__':
