@@ -58,6 +58,10 @@ dependencies {
 
     //google vision
     implementation 'com.google.android.gms:play-services-vision:17.0.2'
+
+    //AWS
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.12.3'
+    implementation 'com.amazonaws:aws-android-sdk-rekognition:2.12.3'
 }
 
 apply plugin: 'com.google.gms.google-services'
