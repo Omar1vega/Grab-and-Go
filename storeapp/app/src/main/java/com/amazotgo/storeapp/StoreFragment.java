@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amazotgo.storeapp.adapters.RecyclerAdapter;
@@ -36,6 +37,7 @@ public class StoreFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
+    private ImageView emptyCartImage;
 
 
     public StoreFragment() {
@@ -54,6 +56,7 @@ public class StoreFragment extends Fragment {
         cartReference = mDatabase.child("carts/" + userId + "/items");
 
         mRecyclerView = view.findViewById(R.id.item_list);
+        emptyCartImage = view.findViewById(R.id.cart_empty_image);
 
         storeFragmentViewModel = ViewModelProviders.of(this).get(StoreFragmentViewModel.class);
         storeFragmentViewModel.init();
@@ -61,6 +64,11 @@ public class StoreFragment extends Fragment {
             @Override
             public void onChanged(@Nullable List<Item> items) {
                 mAdapter.notifyDataSetChanged();
+                if (mAdapter.getItemCount() > 0) {
+                    emptyCartImage.setVisibility(View.GONE);
+                } else {
+                    emptyCartImage.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -102,5 +110,8 @@ public class StoreFragment extends Fragment {
         RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this.getContext());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
+        if (mAdapter.getItemCount() == 0) {
+            emptyCartImage.setVisibility(View.VISIBLE);
+        }
     }
 }
