@@ -1,6 +1,7 @@
 package com.amazotgo.storeapp;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -8,6 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,8 +38,10 @@ public class GoogleSignInActivity extends BaseActivity implements
     public static GoogleSignInOptions googleSignInOptions;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private AmazonS3Client s3Client;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,10 @@ public class GoogleSignInActivity extends BaseActivity implements
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
         mAuth = FirebaseAuth.getInstance();
+
+        AWSCredentials credentials = new BasicAWSCredentials("AKIAJ4QWLISTMGYRHC4A", "ScXqL+enloXIxYUgE2cJ53kPmT7bwQokqa34KPo0");
+        s3Client = new AmazonS3Client(credentials, Region.getRegion(Regions.US_EAST_2));
+
     }
 
     @Override
@@ -153,8 +165,7 @@ public class GoogleSignInActivity extends BaseActivity implements
             findViewById(R.id.signInButton).setVisibility(View.GONE);
             findViewById(R.id.signOutAndDisconnect).setVisibility(View.VISIBLE);
 
-            startActivity(new Intent(GoogleSignInActivity.this, FaceTrackerActivity.class));
-            finish();
+            new CheckS3Task(user).execute();
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
@@ -173,6 +184,36 @@ public class GoogleSignInActivity extends BaseActivity implements
             signOut();
         } else if (i == R.id.disconnectButton) {
             revokeAccess();
+        }
+    }
+
+    private class CheckS3Task extends AsyncTask<Void, Void, String> {
+        private FirebaseUser user;
+
+        CheckS3Task(FirebaseUser user) {
+            this.user = user;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressDialog();
+        }
+
+        protected String doInBackground(Void... params) {
+            return String.valueOf(s3Client.doesObjectExist("amazotgo", user.getUid() + ".jpg"));
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            hideProgressDialog();
+            if (Boolean.valueOf(result)) {
+                startActivity(new Intent(GoogleSignInActivity.this, MainActivity.class));
+            } else {
+                startActivity(new Intent(GoogleSignInActivity.this, FaceTrackerActivity.class));
+            }
+            finish();
         }
     }
 }
