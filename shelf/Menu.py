@@ -103,14 +103,13 @@ class Menu:
                 else:
                     for i in range(detected_item_count, self.current_item_count):
                         self.firebase.add_item(self.item, users[0].UID)
-                self.current_item_count = detected_item_count
-
             else:  # item put back
                 if len(users) == 0:
                     print("unrecognized user detected")
                 else:
                     for i in range(self.current_item_count, detected_item_count):
                         self.firebase.remove_item(self.item, users[0].UID)
+            self.current_item_count = detected_item_count
             time.sleep(2)
 
 
