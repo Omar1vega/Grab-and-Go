@@ -110,6 +110,7 @@ class Menu:
                 else:
                     for i in range(detected_item_count, self.current_item_count):
                         self.firebase.remove_item(self.item, users[0].UID)
+            time.sleep(2)
 
 
 def main():
