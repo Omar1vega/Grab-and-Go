@@ -62,19 +62,9 @@ class Menu:
             time.sleep(3)
             full_distance = self.sensor.calibrate()
 
-            item_count = 0
-            current_distance = full_distance
-            while True:
-                current_distance += self.item_size
-                delta = abs(self.empty - current_distance)
-                if delta > self.item_size:
-                    item_count += 1
-                else:
-                    self.margin = delta
-                    break
+            item_count = int((self.empty - full_distance) / self.item_size)
 
-            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!",
-                                     "Margin: " + str(self.margin) + "cm")
+            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!","")
             time.sleep(3)
 
 
