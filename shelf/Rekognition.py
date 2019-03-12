@@ -18,6 +18,7 @@ class Rekognition:
     def upload(self, file_path):
         upload_path = "pickups/" + file_path.split("/")[-1]
         self.s3_client.upload_file(file_path, 'amazotgo', upload_path)
+        return upload_path
 
     def recognize_users(self, file_path):
         response = self.rekognition.search_faces_by_image(
