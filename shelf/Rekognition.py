@@ -40,3 +40,11 @@ class Rekognition:
                 user = User(face, values["name"], values['user'])
                 users.append(user)
         return users
+
+
+if __name__ == "__main__":
+    r = Rekognition()
+    users = r.recognize_users("pickups/2019_03_12__06_32_48.jpg")
+
+    for user in users:
+        print("Recognized User: " + user.name + ", UID: " + user.UID)
