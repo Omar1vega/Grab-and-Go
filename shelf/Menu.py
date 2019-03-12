@@ -69,7 +69,7 @@ class Menu:
             self.display.print_lines("Calibration Done!", str(self.item_count) + " Items Detected!")
             time.sleep(3)
 
-            for i in range(self.item_count):
+            for i in range(self.item_count + 1):
                 self.increments.append(self.empty - (i * self.item_size))
 
             self.display.print_lines(str(self.increments))
