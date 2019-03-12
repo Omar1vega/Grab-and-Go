@@ -93,9 +93,9 @@ class Menu:
             if detected_item_count == self.current_item_count:
                 continue
 
-            file_path = self.camera.take_picture()
-            self.rekognition.upload(file_path)
-            users = self.rekognition.recognize_users(file_path)
+            local_path = self.camera.take_picture()
+            upload_path = self.rekognition.upload(local_path)
+            users = self.rekognition.recognize_users(upload_path)
 
             if detected_item_count < self.current_item_count:  # item picked up
                 if len(users) == 0:
