@@ -1,7 +1,9 @@
 from Buttons import *
+from Camera import *
 from Display import *
 from Firebase import *
 from RangeSensor import *
+from Rekognition import *
 
 
 class Menu:
@@ -9,12 +11,16 @@ class Menu:
         self.empty = 0
         self.item_size = 0
         self.margin = 0
+        self.item = None
         self.display = Display()
         self.firebase = Firebase()
         self.buttons = Buttons()
+        self.camera = Camera()
+        self.rekognition = Rekognition()
         self.sensor = RangeSensor(display=self.display)
         self.items = self.firebase.get_items()
         self.item_count = 0
+        self.current_item_count = 0
         self.increments = []
 
     def choose_item(self):
@@ -34,7 +40,7 @@ class Menu:
                 position -= 1
             elif button == self.buttons.A:
                 self.display.print_lines("Selected Item: " + item["name"])
-                return item
+                self.item = item
 
     def calibrate_empty(self):
         self.display.print_lines("Calibrate Empty Shelf", "", "Remove All Items", "", "Press A to proceed")
@@ -65,6 +71,7 @@ class Menu:
             full_distance = self.sensor.calibrate()
 
             self.item_count = int((self.empty - full_distance) / self.item_size)
+            self.current_item_count = self.item_count
 
             self.display.print_lines("Calibration Done!", str(self.item_count) + " Items Detected!")
             time.sleep(3)
@@ -81,6 +88,28 @@ class Menu:
             current_distance = self.sensor.get_distance()
             detected_item_count = self.increments.index(min(self.increments, key=lambda x: abs(x - current_distance)))
             self.display.print_lines("Detected Item Count:", "", str(detected_item_count))
+
+            if detected_item_count == self.current_item_count:
+                continue
+
+            file_path = self.camera.take_picture()
+            self.rekognition.upload(file_path)
+            users = self.rekognition.recognize_users(file_path)
+
+            if detected_item_count < self.current_item_count:  # item picked up
+                if len(users) == 0:
+                    print("unrecognized user detected")
+                else:
+                    for i in range(detected_item_count, self.current_item_count):
+                        self.firebase.add_item(self.item, users[0].UID)
+                self.current_item_count = detected_item_count
+
+            else:  # item put back
+                if len(users) == 0:
+                    print("unrecognized user detected")
+                else:
+                    for i in range(detected_item_count, self.current_item_count):
+                        self.firebase.remove_item(self.item, users[0].UID)
 
 
 def main():
