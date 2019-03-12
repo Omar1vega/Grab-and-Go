@@ -28,6 +28,11 @@ class Firebase:
     def log_message(self, message):
         self.messages.push().set(message)
 
+    def archive_cart(self, user):
+        item_reference = db.reference("carts/" + user).child("items")
+        transactions_reference = db.reference("transactions/" + user)
+        transactions_reference.push().set(item_reference.get())
+        item_reference.delete()
 
 
 if __name__ == "__main__":
@@ -36,3 +41,4 @@ if __name__ == "__main__":
     firebase.remove_item(
         {'imageUrl': 'https://images-na.ssl-images-amazon.com/images/I/51ans2c7qUL.jpg', 'name': 'LaCroix'},
         "4ZSTy0yXTldWuzRKUqybjTajeno2")
+    firebase.archive_cart("8mBk742Op7cpW2RYZkb4yRoWpN92")
