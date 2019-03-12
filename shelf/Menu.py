@@ -14,6 +14,7 @@ class Menu:
         self.buttons = Buttons()
         self.sensor = RangeSensor(display=self.display)
         self.items = self.firebase.get_items()
+        self.increments = []
 
     def choose_item(self):
         position = 0
@@ -64,7 +65,13 @@ class Menu:
 
             item_count = int((self.empty - full_distance) / self.item_size)
 
-            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!","")
+            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!")
+            time.sleep(3)
+
+            for increment in range(full_distance, self.empty, self.item_size):
+                self.increments.append(increment)
+
+            self.display.print_lines(str(self.increments))
             time.sleep(3)
 
 
