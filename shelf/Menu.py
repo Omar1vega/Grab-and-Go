@@ -41,6 +41,7 @@ class Menu:
             elif button == self.buttons.A:
                 self.display.print_lines("Selected Item: " + item["name"])
                 self.item = item
+                return
 
     def calibrate_empty(self):
         self.display.print_lines("Calibrate Empty Shelf", "", "Remove All Items", "", "Press A to proceed")
