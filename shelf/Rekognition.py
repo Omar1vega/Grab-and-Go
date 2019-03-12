@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 
 from Face import *
 from User import *
@@ -21,11 +22,15 @@ class Rekognition:
         return upload_path
 
     def recognize_users(self, file_path):
-        response = self.rekognition.search_faces_by_image(
-            CollectionId=self.collection_id,
-            Image={'S3Object': {'Bucket': self.bucket, 'Name': file_path}},
-            FaceMatchThreshold=self.threshold,
-            MaxFaces=self.max_faces)
+        try:
+            response = self.rekognition.search_faces_by_image(
+                CollectionId=self.collection_id,
+                Image={'S3Object': {'Bucket': self.bucket, 'Name': file_path}},
+                FaceMatchThreshold=self.threshold,
+                MaxFaces=self.max_faces)
+        except ClientError:
+            return []
+
         face_matches = response['FaceMatches']
 
         users = []
