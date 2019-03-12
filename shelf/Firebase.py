@@ -23,3 +23,11 @@ class Firebase:
             if item_in_cart == item:
                 item_reference.child(key).delete()
                 return
+
+
+if __name__ == "__main__":
+    firebase = Firebase()
+
+    firebase.remove_item(
+        {'imageUrl': 'https://images-na.ssl-images-amazon.com/images/I/51ans2c7qUL.jpg', 'name': 'LaCroix'},
+        "4ZSTy0yXTldWuzRKUqybjTajeno2")
