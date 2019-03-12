@@ -62,7 +62,7 @@ class RangeSensor:
 
         ping_time = pulse_in(self.echo_pin, GPIO.HIGH, timeOut)  # read plus time of echoPin
         distance = ping_time * 340.0 / 2.0 / 10000.0  # the sound speed is 340m/s, and calculate distance
-        return int(distance)
+        return distance
 
     def calibrate(self):
         d = deque(maxlen=10)
