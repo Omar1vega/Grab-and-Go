@@ -14,6 +14,7 @@ class Menu:
         self.buttons = Buttons()
         self.sensor = RangeSensor(display=self.display)
         self.items = self.firebase.get_items()
+        self.item_count = 0
         self.increments = []
 
     def choose_item(self):
@@ -63,16 +64,24 @@ class Menu:
             time.sleep(3)
             full_distance = self.sensor.calibrate()
 
-            item_count = int((self.empty - full_distance) / self.item_size)
+            self.item_count = int((self.empty - full_distance) / self.item_size)
 
-            self.display.print_lines("Calibration Done!", str(item_count) + " Items Detected!")
+            self.display.print_lines("Calibration Done!", str(self.item_count) + " Items Detected!")
             time.sleep(3)
 
-            for i in range(item_count):
+            for i in range(self.item_count):
                 self.increments.append(self.empty - (i * self.item_size))
 
             self.display.print_lines(str(self.increments))
             time.sleep(3)
+
+    def run(self):
+        while True:
+            current_distance = self.sensor.get_distance()
+
+            detected_item_count = min(self.increments, key=lambda x: abs(x - current_distance))
+
+            self.display.print_lines("Detected Item Count:", "", str(detected_item_count))
 
 
 def main():
@@ -81,6 +90,7 @@ def main():
     menu.calibrate_empty()
     menu.calibrate_item_size()
     menu.fill_shelf()
+    menu.run()
 
 
 if __name__ == '__main__':
