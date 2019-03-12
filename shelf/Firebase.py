@@ -7,6 +7,7 @@ class Firebase:
     def __init__(self):
         firebase_admin.initialize_app(credentials.Certificate('serviceAccountCredentials.json'),
                                       {'databaseURL': 'https://androidsample-225db.firebaseio.com/'})
+        self.messages = db.reference('messages')
 
     def get_items(self):
         return list(db.reference('items').get().values())
@@ -23,6 +24,10 @@ class Firebase:
             if item_in_cart == item:
                 item_reference.child(key).delete()
                 return
+
+    def log_message(self, message):
+        self.messages.push().set(message)
+
 
 
 if __name__ == "__main__":
