@@ -73,14 +73,13 @@ class Menu:
                 self.increments.append(self.empty - (i * self.item_size))
 
             self.display.print_lines(str(self.increments))
+            print(self.increments)
             time.sleep(3)
 
     def run(self):
         while True:
             current_distance = self.sensor.get_distance()
-
-            detected_item_count = min(self.increments, key=lambda x: abs(x - current_distance))
-
+            detected_item_count = self.increments.index(min(self.increments, key=lambda x: abs(x - current_distance)))
             self.display.print_lines("Detected Item Count:", "", str(detected_item_count))
 
 
