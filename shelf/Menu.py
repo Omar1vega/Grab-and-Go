@@ -88,7 +88,8 @@ class Menu:
         while True:
             current_distance = self.sensor.get_distance()
             detected_item_count = self.increments.index(min(self.increments, key=lambda x: abs(x - current_distance)))
-            self.display.print_lines("Detected Item Count:", "", str(detected_item_count))
+            self.display.print_lines("Current Distance: " + current_distance, "", "Detected Item Count:", "",
+                                     str(detected_item_count))
 
             if detected_item_count == self.current_item_count:
                 continue
@@ -96,19 +97,17 @@ class Menu:
             local_path = self.camera.take_picture()
             upload_path = self.rekognition.upload(local_path)
             users = self.rekognition.recognize_users(upload_path)
+            if len(users) == 0:
+                self.firebase.log_message("unrecognized user detected, at shelf with: " + self.item["name"])
+                self.current_item_count = detected_item_count
+                continue
 
             if detected_item_count < self.current_item_count:  # item picked up
-                if len(users) == 0:
-                    self.firebase.log_message("unrecognized user detected")
-                else:
-                    for i in range(detected_item_count, self.current_item_count):
-                        self.firebase.add_item(self.item, users[0].UID)
+                for i in range(detected_item_count, self.current_item_count):
+                    self.firebase.add_item(self.item, users[0].UID)
             else:  # item put back
-                if len(users) == 0:
-                    self.firebase.log_message("unrecognized user detected")
-                else:
-                    for i in range(self.current_item_count, detected_item_count):
-                        self.firebase.remove_item(self.item, users[0].UID)
+                for i in range(self.current_item_count, detected_item_count):
+                    self.firebase.remove_item(self.item, users[0].UID)
             self.current_item_count = detected_item_count
             time.sleep(2)
 
