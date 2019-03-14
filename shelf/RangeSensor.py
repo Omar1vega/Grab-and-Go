@@ -27,7 +27,7 @@ def stable(dq):
     total = 0
     for num in dq:
         total += num
-    average = total // len(dq)
+    average = total / len(dq)
 
     for num in dq:
         if num > (average + 1) or num < (average - 1):
