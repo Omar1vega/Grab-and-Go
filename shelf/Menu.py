@@ -1,9 +1,17 @@
+import socket
+
 from Buttons import *
 from Camera import *
 from Display import *
 from Firebase import *
 from RangeSensor import *
 from Rekognition import *
+
+
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
 
 class Menu:
@@ -114,11 +122,15 @@ class Menu:
 
 def main():
     menu = Menu()
-    menu.choose_item()
-    menu.calibrate_empty()
-    menu.calibrate_item_size()
-    menu.fill_shelf()
-    menu.run()
+    try:
+        menu.choose_item()
+        menu.calibrate_empty()
+        menu.calibrate_item_size()
+        menu.fill_shelf()
+        menu.run()
+    except AssertionError:
+        menu.display.print_lines(get_ip_address())
+        time.sleep(2 * 60)
 
 
 if __name__ == '__main__':
