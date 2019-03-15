@@ -24,7 +24,7 @@ def stable(dq):
     if len(dq) != dq.maxlen:
         return 0
 
-    average = sum(dq) / len(dq)
+    average = sum(dq) / float(len(dq))
 
     for num in dq:
         if num > (average + 1) or num < (average - 1):
