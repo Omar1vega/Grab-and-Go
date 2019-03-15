@@ -98,6 +98,11 @@ class Menu:
             detected_item_count = self.increments.index(min(self.increments, key=lambda x: abs(x - current_distance)))
             self.display.print_lines("Current Distance: " + str(current_distance), "", "Detected Item Count:", "",
                                      str(detected_item_count))
+            if detected_item_count == 0:
+                button = self.buttons.get_button_pressed()
+                if button == self.buttons.A:
+                    self.fill_shelf()
+                    continue
 
             if detected_item_count == self.current_item_count:
                 continue
